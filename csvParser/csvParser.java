@@ -49,7 +49,7 @@ public class csvParser {
         String nuevoCSV = System.getProperty("user.dir") + File.separator + "nodes.txt";
         String edges = System.getProperty("user.dir") + File.separator + "edges.txt"; 
 
-        // Process nodes tag 
+        // Process nodes tag   
         try {
             File file = new File(tag);
             Scanner scanner = new Scanner(file);
