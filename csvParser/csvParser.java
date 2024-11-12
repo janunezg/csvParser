@@ -258,7 +258,6 @@ public class csvParser {
                 String[] fila = scanner.nextLine().split("\\|");
                 if (fila.length > 1 && !fila[0].equals("Forum.id")) {
                     memberCount++;
-                    System.out.println(fila[0]+"  "+fila[1]);
                     String originalForumId = fila[0];
                     String originalPersonId = fila[1];
                     String newForumId = idMapping.get(originalForumId);
