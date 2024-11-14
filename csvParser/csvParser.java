@@ -97,14 +97,15 @@ public class csvParser {
                     if (fila.length > 0 && !fila[0].equals("id")) {
                         nodeCount++;
                         String originalId = fila[0];
-                        String newId = "N" + (idMapping.size() + 1);
-                        idMapping.put(originalId, newId);
+                        
+                        String newId = idMapping.get(originalId);
+                        if (newId == null) {
+                            newId = "N" + (idMapping.size() + 1);
+                            idMapping.put(originalId, newId);
+                        }
+                
                         lineasNodes.add(newId + "," + newId);
                         nodeList.add(newId);
-                        //nNodos.incrementAndGet();
-                        
-                        // Imprimir los valores para depuración
-                        //System.out.println("nNodos: " + nNodos.get() + " idMapping.size(): " + idMapping.size());
                     }
                 }
                 System.out.println("NODOS (" + key + "): " + nodeCount);
