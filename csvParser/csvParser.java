@@ -96,16 +96,16 @@ public class csvParser {
                     String[] fila = scanner.nextLine().split("\\|");
                     if (fila.length > 0 && !fila[0].equals("id")) {
                         nodeCount++;
-                        String originalId = fila[0];
-                        
+                        String originalId = fila[0]; 
                         String newId = idMapping.get(originalId);
                         if (newId == null) {
                             newId = "N" + (idMapping.size() + 1);
                             idMapping.put(originalId, newId);
+                            //aqui se generan los nodos con forma (N1,N1)                  
+                            lineasNodes.add(newId + "," + newId);
+                            nodeList.add(newId);
                         }
-                
-                        lineasNodes.add(newId + "," + newId);
-                        nodeList.add(newId);
+
                     }
                 }
                 System.out.println("NODOS (" + key + "): " + nodeCount);
@@ -124,6 +124,7 @@ public class csvParser {
             }
 
         });
+        //System.out.println(idMapping);
         //System.out.println(nNodos);
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
@@ -147,6 +148,18 @@ public class csvParser {
                         if (sourceId != null && targetId != null) {
                             String keyAux=titulosEdges.get(key);
                             String edge = sourceId + "," + keyAux + "," + targetId;
+                            if(key.equals("forumPost")){
+                                System.out.println("");
+                                System.out.println(edge);
+                                System.out.println(sourceId+"  "+targetId);
+                                System.out.println(fila[0]+"    "+fila[1]);
+                                System.out.println("");
+                                try {
+                                    Thread.sleep(3); // Pausa de 3 milisegundos
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             edgeList.add(edge);
                             lineasEdges.add(edge);
                             edgeCount++;
