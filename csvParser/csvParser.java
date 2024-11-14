@@ -11,12 +11,11 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SocialNetworkProcessor {
+public class csvParser {
     public static void main(String[] args) {
         String basePath = System.getProperty("user.dir") + File.separator + "social_network-csv_basic-sf0.1";
         String resultadosFolder = System.getProperty("user.dir") + File.separator + "resultados" + File.separator;
         String resultadosMain = System.getProperty("user.dir");
-        // Archivos de nodos
         Map<String, String> nodeFiles = new HashMap<>();
         nodeFiles.put("person", basePath + File.separator + "dynamic" + File.separator + "person_0_0.csv");
         nodeFiles.put("comment", basePath + File.separator + "dynamic" + File.separator + "comment_0_0.csv");
@@ -28,7 +27,6 @@ public class SocialNetworkProcessor {
         nodeFiles.put("tagClass", basePath + File.separator + "static" + File.separator + "tagclass_0_0.csv");
 
 
-        // Archivos de relaciones con sus rutas de salida
         Map<String, String> relationFiles = new HashMap<>();
         relationFiles.put("commentCreator", basePath + File.separator + "dynamic" + File.separator + "comment_hasCreator_person_0_0.csv");
         relationFiles.put("personLikes", basePath + File.separator + "dynamic" + File.separator + "person_likes_comment_0_0.csv");
@@ -84,9 +82,10 @@ public class SocialNetworkProcessor {
         Map<String, String> idMapping = new HashMap<>();
         List<String> lineasNodes = new ArrayList<>();
         List<String> lineasEdges = new ArrayList<>();
-        AtomicInteger nNodos = new AtomicInteger(0);
-        AtomicInteger nEdges = new AtomicInteger(0);
-        // Procesar nodos
+        //AtomicInteger nNodos = new AtomicInteger(0);
+        //AtomicInteger nEdges = new AtomicInteger(0);
+        System.out.println();
+
         nodeFiles.forEach((key, filePath) -> {
             try {
                 File file = new File(filePath);
@@ -102,7 +101,7 @@ public class SocialNetworkProcessor {
                         idMapping.put(originalId, newId);
                         lineasNodes.add(newId + "," + newId);
                         nodeList.add(newId);
-                        nNodos.incrementAndGet();
+                        //nNodos.incrementAndGet();
                         
                         // Imprimir los valores para depuración
                         //System.out.println("nNodos: " + nNodos.get() + " idMapping.size(): " + idMapping.size());
@@ -125,12 +124,12 @@ public class SocialNetworkProcessor {
 
         });
         //System.out.println(nNodos);
+        System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
-        System.out.println();
-        System.out.println("Numero nodos:");
+        System.out.println("Numero de nodos:");
         System.out.println(lineasNodes.size());
         System.out.println();
-        System.out.println();
+        System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
         // Procesar relaciones
         relationFiles.forEach((key, filePath) -> {
@@ -150,7 +149,7 @@ public class SocialNetworkProcessor {
                             edgeList.add(edge);
                             lineasEdges.add(edge);
                             edgeCount++;
-                            nEdges.incrementAndGet();
+                            //nEdges.incrementAndGet();
                         }
                     }
                 }
@@ -170,14 +169,14 @@ public class SocialNetworkProcessor {
             }
 
         });
+        System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
-        System.out.println();
-        System.out.println("Numero aristas:");
+        System.out.println("Numero de aristas:");
         System.out.println(lineasEdges.size());
         System.out.println();
+        System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
-        System.out.println();
-        // Escritura final de nodos y relaciones
+
         try (BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(resultadosMain  + File.separator + "nodes.txt"));
              BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(resultadosMain  + File.separator + "edges.txt"))) {
 
@@ -185,13 +184,13 @@ public class SocialNetworkProcessor {
                 nodeWriter.write(nodeLine);
                 nodeWriter.newLine();
             }
-            System.out.println("Archivo final de nodos creado: "+resultadosMain + File.separator + "final_nodes.txt");
+            System.out.println("Archivo final de nodos creado: "+resultadosMain + File.separator + "nodes.txt");
 
             for (String nodeLine : lineasEdges) {
                 edgeWriter.write(nodeLine);
                 edgeWriter.newLine();
             }
-            System.out.println("Archivo final de nodos creado: "+resultadosMain + File.separator + "final_edges.txt");
+            System.out.println("Archivo final de nodos creado: "+resultadosMain + File.separator + "edges.txt");
 
         } catch (IOException e) {
             System.err.println("Error al escribir el archivo final de nodos: " + e.getMessage());
