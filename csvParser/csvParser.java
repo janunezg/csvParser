@@ -148,18 +148,6 @@ public class csvParser {
                         if (sourceId != null && targetId != null) {
                             String keyAux=titulosEdges.get(key);
                             String edge = sourceId + "," + keyAux + "," + targetId;
-                            if(key.equals("forumPost")){
-                                System.out.println("");
-                                System.out.println(edge);
-                                System.out.println(sourceId+"  "+targetId);
-                                System.out.println(fila[0]+"    "+fila[1]);
-                                System.out.println("");
-                                try {
-                                    Thread.sleep(3); // Pausa de 3 milisegundos
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                             edgeList.add(edge);
                             lineasEdges.add(edge);
                             edgeCount++;
