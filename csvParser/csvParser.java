@@ -4,11 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class csvParser {
@@ -36,7 +31,32 @@ public class csvParser {
         prefijos.put("tag", "t");
         prefijos.put("tagClass", "tc");
 
-
+        List<Elemento> prefijosPorRelacion = new ArrayList<>();
+        prefijosPorRelacion.add(new Elemento("commentCreator", new String[]{"m", "p"}));
+        prefijosPorRelacion.add(new Elemento("personLikes", new String[]{"p", "m"}));
+        prefijosPorRelacion.add(new Elemento("commentReplyOfComment", new String[]{"m", "m"}));
+        prefijosPorRelacion.add(new Elemento("postCreator", new String[]{"m", "p"}));
+        prefijosPorRelacion.add(new Elemento("forumPost", new String[]{"f", "m"}));
+        prefijosPorRelacion.add(new Elemento("forumMember", new String[]{"f", "p"}));
+        prefijosPorRelacion.add(new Elemento("forumModerator", new String[]{"f", "p"}));
+        prefijosPorRelacion.add(new Elemento("personLikesPost", new String[]{"p", "m"})); 
+        prefijosPorRelacion.add(new Elemento("personHasInterest", new String[]{"p", "t"}));
+        prefijosPorRelacion.add(new Elemento("forumHasTag", new String[]{"f", "t"}));
+        prefijosPorRelacion.add(new Elemento("postHasTag", new String[]{"m", "t"}));
+        prefijosPorRelacion.add(new Elemento("commentHasTag", new String[]{"m", "t"}));
+        prefijosPorRelacion.add(new Elemento("tagIsSubClassOf", new String[]{"tc", "tc"}));
+        prefijosPorRelacion.add(new Elemento("commentIsLocatedIn", new String[]{"m", "pl"})); 
+        prefijosPorRelacion.add(new Elemento("personIsLocatedIn", new String[]{"p", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("personStudyAt", new String[]{"p", "o"}));
+        prefijosPorRelacion.add(new Elemento("personWorkAt", new String[]{"p", "o"}));
+        prefijosPorRelacion.add(new Elemento("placeIsPartOf", new String[]{"pl", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("tagHasType", new String[]{"t", "tc"}));  
+        prefijosPorRelacion.add(new Elemento("commentReplyOfPost", new String[]{"m", "m"}));
+        prefijosPorRelacion.add(new Elemento("organisationIsLocatedIn", new String[]{"o", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("knows", new String[]{"p", "p"}));
+        prefijosPorRelacion.add(new Elemento("postIsLocatedIn", new String[]{"m", "pl"})); 
+        
+        
         Map<String, String> relationFiles = new HashMap<>();
         relationFiles.put("commentCreator", basePath + File.separator + "dynamic" + File.separator + "comment_hasCreator_person_0_0.csv");
         relationFiles.put("personLikes", basePath + File.separator + "dynamic" + File.separator + "person_likes_comment_0_0.csv");
@@ -90,13 +110,12 @@ public class csvParser {
         
 
         Map<String, String> idMapping = new HashMap<>();
-        Map<String, String> idMapping2 = new HashMap<>();
+        //Map<String, String> idMapping2 = new HashMap<>();
         List<String> lineasNodes = new ArrayList<>();
         List<String> lineasEdges = new ArrayList<>();
         AtomicInteger nComment = new AtomicInteger(0);
         AtomicInteger nPost = new AtomicInteger(0);
         System.out.println();
-        boolean flag=false;
         //int nComment=0;
         //int nPost=0;
         nodeFiles.forEach((key, filePath) -> {
@@ -106,33 +125,40 @@ public class csvParser {
                 int nodeCount = 0;
                 List<String> nodeList = new ArrayList<>();
                 String prefix = prefijos.getOrDefault(key, "N");
+                
+                if(key.equals("comment") && nPost.get()>0){
+                    nodeCount=nPost.get()+1;
+                }
+                if(key.equals("post") && nComment.get()>0){
+                    nodeCount=nComment.get()+1;
+                }
                 while (scanner.hasNextLine()) {
                     String[] fila = scanner.nextLine().split("\\|");
                     if (fila.length > 0 && !fila[0].equals("id")) {
                         String originalId = fila[0];
                         String newId = prefix + nodeCount;
-                        //System.out.println(key+ "esta?  "+idMapping.get(originalId));
-                        //if (idMapping.get(originalId) == null) {
-                            newId = prefix + nodeCount;
-                            idMapping.put(originalId, newId);
-                            idMapping2.put(newId,originalId);
-                            lineasNodes.add(newId + "," + newId);
-                            nodeList.add(newId);
-                            nodeCount++;
-                            if(key.equals("comment")){
-                                nComment.incrementAndGet();
-                            }
-                            if(key.equals("post")){
-                                nPost.incrementAndGet();
-                            }
-                        //}
-                        
+                        idMapping.put(prefix + originalId, newId);
+                        /*if((prefix+originalId).equals("m618475290625")){
+                            System.out.println("jajaj "+prefix + originalId);
+                            //System.exit(0);
+                        }*/
+                        //idMapping2.put(newId, originalId);
+                        lineasNodes.add(newId + "," + newId);
+                        nodeList.add(newId);
+                        nodeCount++;
+                        if(key.equals("comment")){
+                            nComment.incrementAndGet();
+                        }
+                        if(key.equals("post")){
+                            nPost.incrementAndGet();
+                        }
+                    
                     }
                 }
                 System.out.println("NODOS (" + key + "): " + nodeCount);
-                System.out.println("conteo 2");
-                System.out.println("coment "+nComment);
-                System.out.println("post "+ nPost);
+                //System.out.println("conteo 2");
+                //System.out.println(idMapping.size());
+                //System.out.println(idMapping2.size());
                 scanner.close();
 
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultadosFolder + key + ".txt"))) {
@@ -166,13 +192,33 @@ public class csvParser {
                 File file = new File(filePath);
                 Scanner scanner = new Scanner(file);
                 int edgeCount = 0;
-                String prefix = prefijos.getOrDefault(key, "N");
-                //System.out.println(prefix);
+                String firstString = null;
+                String secondString = null;
+
+                for (Elemento elemento : prefijosPorRelacion) {
+                    if (elemento.getStringPrincipal().equals(key)) {
+                        String[] secondaryArray = elemento.getArraySecundario();
+                        
+                        if (secondaryArray.length >= 2) {
+                            firstString = secondaryArray[0];  
+                            secondString = secondaryArray[1]; 
+                        } else {
+                            //System.out.println("El array secundario no tiene suficientes elementos.");
+                        }
+                        //System.out.println("Primer String: " + firstString);
+                        //System.out.println("Segundo String: " + secondString);
+                        break;
+                    }
+                }
+                //System.out.println("Primer String: " + firstString);
+                //System.out.println("Segundo String: " + secondString);               
                 while (scanner.hasNextLine()) {
                     String[] fila = scanner.nextLine().split("\\|");
                     if (fila.length > 1 && !fila[0].contains("id")) {
-                        String sourceId = idMapping.get(fila[0]);
-                        String targetId = idMapping.get(fila[1]);
+                        String sourceId = idMapping.get(firstString+fila[0]);
+                        String targetId = idMapping.get(secondString+fila[1]);
+                        //System.out.println(firstString+fila[0]+"  result "+idMapping.get(firstString+fila[0]));
+                        //System.out.println(secondString+fila[1]+"  result "+idMapping.get(secondString+fila[1]));
                         if (sourceId != null && targetId != null) {
                             String keyAux=titulosEdges.get(key);
                             String edge = sourceId + "," + keyAux + "," + targetId;
@@ -199,6 +245,8 @@ public class csvParser {
             }
 
         });
+
+        
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
         System.out.println("Numero de aristas:");
@@ -225,5 +273,33 @@ public class csvParser {
         } catch (IOException e) {
             System.err.println("Error al escribir el archivo final de nodos: " + e.getMessage());
         }
+    }
+}
+
+
+
+class Elemento {
+    String stringPrincipal;
+    String[] arraySecundario;
+
+    public Elemento(String stringPrincipal, String[] arraySecundario) {
+        this.stringPrincipal = stringPrincipal;
+        this.arraySecundario = arraySecundario;
+    }
+
+    public String getStringPrincipal(){
+        return stringPrincipal;
+    }
+
+    public String[] getArraySecundario(){
+        return arraySecundario;
+    }
+
+    @Override
+    public String toString() {
+        return "Elemento{" +
+                "stringPrincipal='" + stringPrincipal + '\'' +
+                ", arraySecundario=" + Arrays.toString(arraySecundario) +
+                '}';
     }
 }
