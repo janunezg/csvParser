@@ -32,12 +32,12 @@ public class csvParser {
         prefijos.put("person", "p");
         prefijos.put("comment", "m"); 
         prefijos.put("post", "m");     
-        prefijos.put("place", "pl");
+        prefijos.put("place", "pL");
         prefijos.put("organisation", "o");
         prefijos.put("forum", "f");
         prefijos.put("tag", "t");
         prefijos.put("tagClass", "tc");
-
+        
         List<Elemento> prefijosPorRelacion = new ArrayList<>();
         prefijosPorRelacion.add(new Elemento("commentCreator", new String[]{"m", "p"}));
         prefijosPorRelacion.add(new Elemento("personLikes", new String[]{"p", "m"}));
@@ -52,16 +52,16 @@ public class csvParser {
         prefijosPorRelacion.add(new Elemento("postHasTag", new String[]{"m", "t"}));
         prefijosPorRelacion.add(new Elemento("commentHasTag", new String[]{"m", "t"}));
         prefijosPorRelacion.add(new Elemento("tagIsSubClassOf", new String[]{"tc", "tc"}));
-        prefijosPorRelacion.add(new Elemento("commentIsLocatedIn", new String[]{"m", "pl"})); 
-        prefijosPorRelacion.add(new Elemento("personIsLocatedIn", new String[]{"p", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("commentIsLocatedIn", new String[]{"m", "pL"})); 
+        prefijosPorRelacion.add(new Elemento("personIsLocatedIn", new String[]{"p", "pL"}));  
         prefijosPorRelacion.add(new Elemento("personStudyAt", new String[]{"p", "o"}));
         prefijosPorRelacion.add(new Elemento("personWorkAt", new String[]{"p", "o"}));
-        prefijosPorRelacion.add(new Elemento("placeIsPartOf", new String[]{"pl", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("placeIsPartOf", new String[]{"pL", "pL"}));  
         prefijosPorRelacion.add(new Elemento("tagHasType", new String[]{"t", "tc"}));  
         prefijosPorRelacion.add(new Elemento("commentReplyOfPost", new String[]{"m", "m"}));
-        prefijosPorRelacion.add(new Elemento("organisationIsLocatedIn", new String[]{"o", "pl"}));  
+        prefijosPorRelacion.add(new Elemento("organisationIsLocatedIn", new String[]{"o", "pL"}));  
         prefijosPorRelacion.add(new Elemento("knows", new String[]{"p", "p"}));
-        prefijosPorRelacion.add(new Elemento("postIsLocatedIn", new String[]{"m", "pl"})); 
+        prefijosPorRelacion.add(new Elemento("postIsLocatedIn", new String[]{"m", "pL"})); 
         
         
         Map<String, String> relationFiles = new HashMap<>();
