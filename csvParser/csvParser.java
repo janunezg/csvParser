@@ -26,6 +26,16 @@ public class csvParser {
         nodeFiles.put("tag", basePath + File.separator + "static" + File.separator + "tag_0_0.csv");
         nodeFiles.put("tagClass", basePath + File.separator + "static" + File.separator + "tagclass_0_0.csv");
 
+        Map<String, String> prefijos = new HashMap<>();
+        prefijos.put("person", "p");
+        prefijos.put("comment", "m"); 
+        prefijos.put("post", "m");     
+        prefijos.put("place", "pl");
+        prefijos.put("organisation", "o");
+        prefijos.put("forum", "f");
+        prefijos.put("tag", "t");
+        prefijos.put("tagClass", "tc");
+
 
         Map<String, String> relationFiles = new HashMap<>();
         relationFiles.put("commentCreator", basePath + File.separator + "dynamic" + File.separator + "comment_hasCreator_person_0_0.csv");
@@ -80,35 +90,49 @@ public class csvParser {
         
 
         Map<String, String> idMapping = new HashMap<>();
+        Map<String, String> idMapping2 = new HashMap<>();
         List<String> lineasNodes = new ArrayList<>();
         List<String> lineasEdges = new ArrayList<>();
-        //AtomicInteger nNodos = new AtomicInteger(0);
-        //AtomicInteger nEdges = new AtomicInteger(0);
+        AtomicInteger nComment = new AtomicInteger(0);
+        AtomicInteger nPost = new AtomicInteger(0);
         System.out.println();
-
+        boolean flag=false;
+        //int nComment=0;
+        //int nPost=0;
         nodeFiles.forEach((key, filePath) -> {
             try {
                 File file = new File(filePath);
                 Scanner scanner = new Scanner(file);
                 int nodeCount = 0;
                 List<String> nodeList = new ArrayList<>();
+                String prefix = prefijos.getOrDefault(key, "N");
                 while (scanner.hasNextLine()) {
                     String[] fila = scanner.nextLine().split("\\|");
                     if (fila.length > 0 && !fila[0].equals("id")) {
-                        nodeCount++;
-                        String originalId = fila[0]; 
-                        String newId = idMapping.get(originalId);
-                        if (newId == null) {
-                            newId = "N" + (idMapping.size() + 1);
+                        String originalId = fila[0];
+                        String newId = prefix + nodeCount;
+                        //System.out.println(key+ "esta?  "+idMapping.get(originalId));
+                        //if (idMapping.get(originalId) == null) {
+                            newId = prefix + nodeCount;
                             idMapping.put(originalId, newId);
-                            //aqui se generan los nodos con forma (N1,N1)                  
+                            idMapping2.put(newId,originalId);
                             lineasNodes.add(newId + "," + newId);
                             nodeList.add(newId);
-                        }
-
+                            nodeCount++;
+                            if(key.equals("comment")){
+                                nComment.incrementAndGet();
+                            }
+                            if(key.equals("post")){
+                                nPost.incrementAndGet();
+                            }
+                        //}
+                        
                     }
                 }
                 System.out.println("NODOS (" + key + "): " + nodeCount);
+                System.out.println("conteo 2");
+                System.out.println("coment "+nComment);
+                System.out.println("post "+ nPost);
                 scanner.close();
 
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultadosFolder + key + ".txt"))) {
@@ -134,12 +158,16 @@ public class csvParser {
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println();
         // Procesar relaciones
+
+        //AÑADIR VERIFICACION 
         relationFiles.forEach((key, filePath) -> {
             List<String> edgeList = new ArrayList<>();
             try {
                 File file = new File(filePath);
                 Scanner scanner = new Scanner(file);
                 int edgeCount = 0;
+                String prefix = prefijos.getOrDefault(key, "N");
+                //System.out.println(prefix);
                 while (scanner.hasNextLine()) {
                     String[] fila = scanner.nextLine().split("\\|");
                     if (fila.length > 1 && !fila[0].contains("id")) {
