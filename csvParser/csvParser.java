@@ -6,6 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ *
+ * @author Juan Andres Nunez
+ * @version 1.0
+ * @since 2024-11-16
+ */
 public class csvParser {
     public static void main(String[] args) {
         String basePath = System.getProperty("user.dir") + File.separator + "social_network-csv_basic-sf0.1";
